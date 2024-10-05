@@ -44,8 +44,25 @@ function createReport(req, res) {
     });
 }
 
+function searchReports(req, res) {
+    const { searchQuery } = req.query;
+    let sql = 'SELECT DISTINCT * FROM reports';
+    let params = [];
+    if (searchQuery) {
+        sql += ' WHERE title LIKE ? OR description LIKE ?';
+        params.push(`%${searchQuery}%`, `%${searchQuery}%`);
+    }
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json(rows);
+    });
+}
+
 module.exports = {
     getAllReports,
     createReport,
-    upload
+    upload,
+    searchReports
 };
